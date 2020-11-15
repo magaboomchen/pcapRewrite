@@ -5,6 +5,7 @@
 *.slo
 *.lo
 *.o
+*.cpp.o
 *.obj
 
 # Precompiled Headers
@@ -30,3 +31,27 @@
 *.exe
 *.out
 *.app
+
+# Data
+*.pcap
+
+# Log
+*.log
+*.txt
+
+# Directories
+log/
+tmp/
+pid/
+bash_backup/
+backup/
+build/
+pcap/
+slice/
+
+# Backup Files
+*~
+
+# Executable Files
+main
+pcapRewrite
