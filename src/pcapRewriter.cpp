@@ -15,14 +15,16 @@ using namespace std;
 
 
 PcapRewriter::PcapRewriter(PcapReader pr, PcapWriter pw){
+    LOG(INFO) << "Initial PcapRewriter" ;
     this->pr = pr;
     this->pw = pw;
 }
 
-void PcapRewriter::setPolicy(string dstipmap, string osrcip, string odstip){
+void PcapRewriter::setPolicy(string dstipmap, string osrcip, string odstip, int trunMTU){
     this->dstipmap = dstipmap;
     this->osrcip = osrcip;
     this->odstip = odstip;
+    this->trunMTU = trunMTU;
 }
 
 void PcapRewriter::rewrite(void){
@@ -51,6 +53,9 @@ void PcapRewriter::rewrite(void){
             // LOG(INFO) << "rewrite dst ip" ;
             rewriteDstIP(pcapPkt);
         }
+
+        // trun packet length
+        trun(pcapPkt);
 
         // add outter ip tunnel
         if(osrcip != OPTIONAL_ARG && odstip != OPTIONAL_ARG){
@@ -101,6 +106,23 @@ void PcapRewriter::rewriteDstIP(pcap_pkt &pcapPkt){
     if(rv == 0){
         LOG(ERROR) << "New dst ip is invalid" ;
         throw std::invalid_argument("New dst ip is invalid.");
+    }
+}
+
+void PcapRewriter::trun(pcap_pkt &pcapPkt){
+    // Ethernet
+    struct sniff_ethernet *ethernet = (struct sniff_ethernet *)(pcapPkt.data);
+
+    // The IP header
+    struct sniff_ip *ip = (struct sniff_ip*)(pcapPkt.data + SIZE_ETHERNET);
+    u_int size_ip = IP_HL(ip)*4;
+    u_short ipLen = ntohs(ip->ip_len);
+
+    if(ipLen + SIZE_ETHERNET > this->trunMTU){
+        LOG(INFO) << "trun packet to new mtu" ;
+        ip->ip_len = htons(trunMTU - SIZE_ETHERNET);
+        pcapPkt.header.caplen = pcapPkt.header.caplen<=trunMTU ? pcapPkt.header.caplen : trunMTU;
+        pcapPkt.header.len = pcapPkt.header.len<=trunMTU ? pcapPkt.header.len : trunMTU;
     }
 }
 

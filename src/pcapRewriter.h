@@ -12,7 +12,7 @@ using namespace std;
 class PcapRewriter{
     public:
         PcapRewriter(PcapReader pr, PcapWriter pw);
-        void setPolicy(string dstipmap, string osrcip, string odstip);
+        void setPolicy(string dstipmap, string osrcip, string odstip, int trunMTU);
         void rewrite(void);
     private:
         PcapReader pr;
@@ -20,9 +20,11 @@ class PcapRewriter{
         string dstipmap;
         string osrcip;
         string odstip;
+        int trunMTU;
 
         bool isValidPkt(pcap_pkt pcapPkt);
         void rewriteDstIP(pcap_pkt &pcapPkt);
+        void trun(pcap_pkt &pcapPkt);
         void addIPTunnel(pcap_pkt &pcapPkt);
 };
 

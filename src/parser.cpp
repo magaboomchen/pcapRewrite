@@ -6,6 +6,13 @@
 
 using namespace std;
 
+static bool ValidateNum(const char *flagname, int value){
+    if(value > 0 && value <= 65535){
+        return true;
+    }
+    printf("Invalid value for --%s:%d\n", flagname, (int) value);
+    return false;
+}
 
 static bool ValidateString(const char *flagname, const std::string& value){
     if(value == "none"){
@@ -31,3 +38,6 @@ DEFINE_validator(osrcip, &ValidateString);
 DEFINE_string(odstip, OPTIONAL_ARG, "add ip-in-ip tunnel with dst ip");
 DEFINE_validator(odstip, &ValidateString);
 
+DEFINE_int32(trunMTU, 65535, 
+    "truncate packet to new mtu and rewrite pktLength in ip header");
+DEFINE_validator(trunMTU, &ValidateNum);

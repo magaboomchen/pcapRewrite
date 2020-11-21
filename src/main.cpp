@@ -16,7 +16,7 @@ DECLARE_string(w);
 DECLARE_string(dstipmap);
 DECLARE_string(osrcip);
 DECLARE_string(odstip);
-
+DECLARE_int32(trunMTU);
 
 int main(int argc, char *argv[]){
     google::ParseCommandLineFlags(&argc, &argv, true);
@@ -30,7 +30,7 @@ int main(int argc, char *argv[]){
     PcapWriter pw(FLAGS_w);    // example FLAGS_w = "./pcap/22.pcap"
     PcapRewriter prw(pr, pw);
 
-    prw.setPolicy(FLAGS_dstipmap, FLAGS_osrcip, FLAGS_odstip);
+    prw.setPolicy(FLAGS_dstipmap, FLAGS_osrcip, FLAGS_odstip, FLAGS_trunMTU);
     prw.rewrite();
 
     pw.closeWriter();

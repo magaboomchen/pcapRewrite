@@ -48,6 +48,7 @@ backup/
 build/
 pcap/
 slice/
+Debug/
 
 # Backup Files
 *~
